@@ -1,27 +1,27 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const Vote = sequelize.define('Vote', {
+const Statistic = sequelize.define('Statistic', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    user_id: {
+    total_vote: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        defaultValue: 0,
     },
-    code_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
     },
-    timestamp: {
+    updated_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
 }, {
-    tableName: 'votes',
+    tableName: 'statistic',
     timestamps: false,
 });
 
-module.exports = Vote;
+module.exports = Statistic;

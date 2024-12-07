@@ -1,28 +1,36 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-const User = sequelize.define('User', {
+const Event = sequelize.define('Event', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    nim: {
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
-    },
-    password: {
-        type: DataTypes.STRING(200),
-        allowNull: false,
-    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+    code: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
+    start_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    end_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
 }, {
-    tableName: 'users',
+    tableName: 'event',
     timestamps: false,
 });
 
-module.exports = User;
+module.exports = Event;

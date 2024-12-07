@@ -32,6 +32,10 @@ const Candidate = sequelize.define('Candidate', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    event_code: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }, 
 }, {
     tableName: 'candidates',
     timestamps: false,
