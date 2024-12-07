@@ -1,20 +1,23 @@
 const Candidate = require('../models/candidateModel');
 
-const getCandidates = async (req, res) => {
+const getCandidatesByEvent = async (req, res) => {
+    const { eventCode } = req.params;
+
     try {
         const candidates = await Candidate.findAll({
+            where: { event_code: eventCode },
             attributes: ['name', 'nomor_urut', 'visi', 'misi'],
         });
 
-        if (candidates.length === 0) {
-            return res.status(404).json({ message: 'No candidates found' });
+        if (!candidates || candidates.length === 0) {
+            return res.status(404).json({ message: 'No candidates found for this event' });
         }
 
         res.status(200).json(candidates);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Something went wrong' });
+        res.status(500).json({ error: 'An error occurred while fetching candidates' });
     }
 };
 
-module.exports = { getCandidates };
+module.exports = { getCandidatesByEvent };

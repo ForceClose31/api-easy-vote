@@ -1,51 +1,50 @@
-const Candidate = require('../models/candidateModel');
 const Vote = require('../models/voteModel');
-const User = require('../models/userModel');
+const Candidate = require('../models/candidateModel');
+const Statistic = require('../models/statisticModel');
 
-const castVote = async (req, res) => {
-    const { candidateId } = req.body;
-    const userId = req.user.id;
+const castVoteByEvent = async (req, res) => {
+    const { eventCode, candidate_id } = req.params;
+    const user_id = req.user.id;
 
     try {
-        const user = await User.findByPk(userId);
-        if (user.isVoted === 'yes') {
-            return res.status(400).json({ error: 'User has already voted' });
-        }
-
-        const candidate = await Candidate.findByPk(candidateId);
+        const candidate = await Candidate.findOne({
+            where: { id: candidate_id, event_code: eventCode },
+        });
         if (!candidate) {
-            return res.status(404).json({ error: 'Candidate not found' });
+            return res.status(404).json({ message: 'Candidate not found for this event' });
         }
 
-        await Vote.create({ user_id: userId, candidate_id: candidateId });
+        const existingVote = await Vote.findOne({ where: { user_id } });
+        if (existingVote) {
+            return res.status(400).json({ message: 'User has already voted' });
+        }
 
-        candidate.vote_count += 1;
-        await candidate.save();
+        await Vote.create({
+            user_id,
+            code_id: candidate_id,
+            timestamp: new Date(),
+        });
 
-        user.isVoted = 'yes';
-        await user.save();
+        await Candidate.update(
+            { vote_count: candidate.vote_count + 1 },
+            { where: { id: candidate_id } }
+        );
 
-        res.status(200).json({ message: 'Vote cast successfully' });
+        const statistic = await Statistic.findOne();
+        if (statistic) {
+            await Statistic.update(
+                { total_vote: statistic.total_vote + 1 },
+                { where: { id: statistic.id } }
+            );
+        } else {
+            await Statistic.create({ total_vote: 1 });
+        }
+
+        res.status(200).json({ message: 'Vote successfully cast!' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to cast vote' });
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while casting the vote' });
     }
 };
 
-const getCandidatesVote = async (req, res) => {
-    try {
-        const candidates = await Candidate.findAll({
-            attributes: ['name', 'nomor_urut'],
-        });
-
-        if (candidates.length === 0) {
-            return res.status(404).json({ message: 'No candidates found' });
-        }
-
-        res.status(200).json(candidates);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Something went wrong' });
-    }
-}
-
-module.exports = { castVote, getCandidatesVote };
+module.exports = { castVoteByEvent };
