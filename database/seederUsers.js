@@ -1,6 +1,8 @@
+const { ethers } = require('ethers');
 const bcrypt = require('bcrypt');
 const User = require('../models/userModel');
-const Candidate = require('../models/candidateModel'); 
+const Candidate = require('../models/candidateModel');
+const VoteContract = require('../services/blockchainService'); 
 
 const seedData = async () => {
     try {
@@ -21,54 +23,46 @@ const seedData = async () => {
 
         console.log('Dummy user seeded successfully!');
 
-        await Candidate.create({
-            id: 1,
-            name: 'John Doe',
-            profile_picture: 'https://example.com/profile1.jpg',
-            visi: 'Menjadi pemimpin yang adil dan bijaksana.',
-            misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
-            nomor_urut: 1,
-            vote_count: 0,
-            position_id: 1,
-            event_code: 'EVT2024', 
-        });
+        const candidates = [
+            {
+                id: 1,
+                name: 'John Doe',
+                profile_picture: 'https://example.com/profile1.jpg',
+                visi: 'Menjadi pemimpin yang adil dan bijaksana.',
+                misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
+                nomor_urut: 1,
+                event_code: 'EVT2024',
+            },
+            {
+                id: 2,
+                name: 'Jane Smith',
+                profile_picture: 'https://example.com/profile2.jpg',
+                visi: 'Meningkatkan kesejahteraan masyarakat.',
+                misi: 'Menjamin keseimbangan ekonomi dan sosial.',
+                nomor_urut: 2,
+                event_code: 'EVT2024',
+            },
+        ];
 
-        await Candidate.create({
-            id: 2,
-            name: 'John Doe',
-            profile_picture: 'https://example.com/profile1.jpg',
-            visi: 'Menjadi pemimpin yang adil dan bijaksana.',
-            misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
-            nomor_urut: 2,
-            vote_count: 0,
-            position_id: 1,
-            event_code: 'EVT2024', 
-        });
+        for (const candidate of candidates) {
+            await Candidate.create({
+                id: candidate.id,
+                name: candidate.name,
+                profile_picture: candidate.profile_picture,
+                visi: candidate.visi,
+                misi: candidate.misi,
+                nomor_urut: candidate.nomor_urut,
+                vote_count: 0,
+                position_id: 1,
+                event_code: candidate.event_code,
+            });
 
-        await Candidate.create({
-            id: 3,
-            name: 'John Doe',
-            profile_picture: 'https://example.com/profile1.jpg',
-            visi: 'Menjadi pemimpin yang adil dan bijaksana.',
-            misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
-            nomor_urut: 3,
-            vote_count: 0,
-            position_id: 1,
-            event_code: 'EVT2024', 
-        });
+            console.log(`Candidate ${candidate.name} added to database.`);
 
-        await Candidate.create({
-            id: 4,
-            name: 'John Doe',
-            profile_picture: 'https://example.com/profile1.jpg',
-            visi: 'Menjadi pemimpin yang adil dan bijaksana.',
-            misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
-            nomor_urut: 4,
-            vote_count: 0,
-            position_id: 1,
-            event_code: 'EVT2024', 
-        });
-        
+            await VoteContract.addCandidateToBlockchain(candidate.name, candidate.visi, candidate.misi);
+            console.log(`Candidate ${candidate.name} added to blockchain.`);
+        }
+
         console.log('Dummy candidates seeded successfully!');
     } catch (error) {
         console.error('Error seeding data:', error);

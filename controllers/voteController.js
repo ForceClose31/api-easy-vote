@@ -1,3 +1,4 @@
+const { castVoteBlockchain } = require("../services/blockchainService");
 const Vote = require('../models/voteModel');
 const Candidate = require('../models/candidateModel');
 const Statistic = require('../models/statisticModel');
@@ -29,6 +30,8 @@ const castVoteByEvent = async (req, res) => {
             { vote_count: candidate.vote_count + 1 },
             { where: { id: candidate_id } }
         );
+
+        await castVoteBlockchain(candidate_id);
 
         const statistic = await Statistic.findOne();
         if (statistic) {
