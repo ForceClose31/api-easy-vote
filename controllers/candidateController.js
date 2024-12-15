@@ -6,7 +6,7 @@ const getCandidatesByEvent = async (req, res) => {
   try {
     const candidates = await Candidate.findAll({
       where: { event_code: eventCode },
-      attributes: ["name", "nomor_urut", "visi", "misi"],
+      attributes: ["name", "profile_picture", "nomor_urut", "visi", "misi"],
     });
 
     if (!candidates || candidates.length === 0) {
