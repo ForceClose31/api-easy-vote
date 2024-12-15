@@ -9,7 +9,7 @@ const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const abi = [
     "function castVote(uint candidateId) public",
     "function getCandidate(uint candidateId) public view returns (tuple(uint id, string name, string visi, string misi, uint voteCount))",
-    "function addCandidate(string memory name, string memory visi, string memory misi)"
+    "function addCandidate(string memory name, string memory visi, string memory misi)",
 ];
 
 const voteContract = new ethers.Contract(contractAddress, abi, wallet);
@@ -28,7 +28,16 @@ async function castVoteBlockchain(candidateId) {
     try {
         const tx = await voteContract.castVote(candidateId);
         await tx.wait();
+
+        const receipt = await provider.getTransactionReceipt(tx.hash);
+
         console.log(`Vote cast for candidate ID: ${candidateId}`);
+        
+        return {
+            transactionHash: tx.hash,
+            blockNumber: receipt.blockNumber
+        };
+        
     } catch (error) {
         console.error(`Error casting vote: ${error.message}`);
     }

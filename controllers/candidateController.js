@@ -26,7 +26,7 @@ const getVoteCount = async (req, res) => {
     try {
         const candidates = await Candidate.findAll({
             where: { event_code: eventCode },
-            attributes: ['vote_count'],
+            attributes: ['id','vote_count'],
         });
 
         if (!candidates || candidates.length === 0) {

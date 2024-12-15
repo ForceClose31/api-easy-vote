@@ -2,6 +2,7 @@ const { castVoteBlockchain } = require("../services/blockchainService");
 const Vote = require('../models/voteModel');
 const Candidate = require('../models/candidateModel');
 const Statistic = require('../models/statisticModel');
+const History = require('../models/historyModel');
 
 const castVoteByEvent = async (req, res) => {
     const { eventCode, candidate_id } = req.params;
@@ -31,17 +32,15 @@ const castVoteByEvent = async (req, res) => {
             { where: { id: candidate_id } }
         );
 
-        await castVoteBlockchain(candidate_id);
+        const txData = await castVoteBlockchain(candidate_id);
 
-        const statistic = await Statistic.findOne();
-        if (statistic) {
-            await Statistic.update(
-                { total_vote: statistic.total_vote + 1 },
-                { where: { id: statistic.id } }
-            );
-        } else {
-            await Statistic.create({ total_vote: 1 });
-        }
+        await History.create({
+            candidate_id: candidate_id,
+            vote_count: candidate.vote_count,  
+            transaction_hash: txData.transactionHash,
+            block_number: txData.blockNumber,
+            timestamp: new Date(),
+        });
 
         res.status(200).json({ message: 'Vote successfully cast!' });
     } catch (error) {
