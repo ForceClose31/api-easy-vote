@@ -31,6 +31,7 @@ const seedData = async () => {
                 visi: 'Menjadi pemimpin yang adil dan bijaksana.',
                 misi: 'Membangun infrastruktur yang lebih baik dan meningkatkan pendidikan.',
                 nomor_urut: 1,
+                position_id: 2,
                 event_code: 'EVT2024',
             },
             {
@@ -40,6 +41,7 @@ const seedData = async () => {
                 visi: 'Meningkatkan kesejahteraan masyarakat.',
                 misi: 'Menjamin keseimbangan ekonomi dan sosial.',
                 nomor_urut: 2,
+                position_id: 1,
                 event_code: 'EVT2024',
             },
         ];
@@ -53,7 +55,7 @@ const seedData = async () => {
                 misi: candidate.misi,
                 nomor_urut: candidate.nomor_urut,
                 vote_count: 0,
-                position_id: 1,
+                position_id: candidate.position_id,
                 event_code: candidate.event_code,
             });
 
