@@ -12,7 +12,7 @@ router.get('/event/:code', authMiddleware, getEventByCode);
 router.get('/event', authMiddleware, getEventAll);
 
 router.get('/event/:eventCode/candidates', authMiddleware, getCandidatesByEvent);
-router.get('/event/:eventCode/candidates', authMiddleware, getVoteCount);
+router.get('/event/:eventCode/count', authMiddleware, getVoteCount);
 
 router.post('/event/:eventCode/vote/:candidate_id', authMiddleware, castVoteByEvent);
 
